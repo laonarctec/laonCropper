@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 MIN_TEXT_BOXES = 3
 PAD_RATIO = 0.02
 DET_MAX_SIZE = 960
-AREA_FILTER_MULT = 5.0
+AREA_FILTER_MULT = 10.0
 Y_SCALE = 0.5
 EPS_RATIO = 0.10
 MIN_SAMPLES = 3
@@ -142,13 +142,34 @@ class OcrDensityDetector:
             return None
 
         best_label = max(unique_labels, key=lambda l: np.sum(labels == l))
-        mask = labels == best_label
-        cluster_boxes = [b for b, m in zip(filtered, mask) if m]
+        best_mask = labels == best_label
+        best_boxes = [b for b, m in zip(filtered, best_mask) if m]
 
-        if len(cluster_boxes) < MIN_TEXT_BOXES:
+        if len(best_boxes) < MIN_TEXT_BOXES:
             return None
 
-        # 4. 최외곽 포인트 + padding
+        # 4. y 범위 겹치는 인접 클러스터 병합
+        #    영수증은 좌(항목명) / 우(금액)로 분리될 수 있으나 y 범위는 동일.
+        #    포스터/간판 텍스트는 y 범위가 다르므로 병합되지 않음.
+        best_ys = [b[1] for b in best_boxes] + [b[3] for b in best_boxes]
+        best_y_min, best_y_max = min(best_ys), max(best_ys)
+        best_y_span = best_y_max - best_y_min
+
+        cluster_boxes = list(best_boxes)
+        for other_label in unique_labels:
+            if other_label == best_label:
+                continue
+            other_mask = labels == other_label
+            other_boxes = [b for b, m in zip(filtered, other_mask) if m]
+            other_ys = [b[1] for b in other_boxes] + [b[3] for b in other_boxes]
+            other_y_min, other_y_max = min(other_ys), max(other_ys)
+            # y 범위 겹침 계산
+            overlap = max(0, min(best_y_max, other_y_max) - max(best_y_min, other_y_min))
+            overlap_ratio = overlap / best_y_span if best_y_span > 0 else 0
+            if overlap_ratio > 0.3:  # 30% 이상 겹치면 같은 영수증으로 간주
+                cluster_boxes.extend(other_boxes)
+
+        # 5. 최외곽 포인트 + padding
         xs = [b[0] for b in cluster_boxes] + [b[2] for b in cluster_boxes]
         ys = [b[1] for b in cluster_boxes] + [b[3] for b in cluster_boxes]
         pad_x = int(w * PAD_RATIO)
