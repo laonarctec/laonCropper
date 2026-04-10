@@ -12,7 +12,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from final.detection import BBox, CliffScanner, ContourDetector, OcrDensityDetector
+from src.detection import BBox, CliffScanner, ContourDetector, OcrDensityDetector
 
 logger = logging.getLogger(__name__)
 

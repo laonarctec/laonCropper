@@ -1,0 +1,8 @@
+services:
+  cropper:
+    build: .
+    ports:
+      - "8200:8200"
+    restart: unless-stopped
+    environment:
+      - OCR_PAD_RATIO=0.02

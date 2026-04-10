@@ -6,9 +6,9 @@
     3. CliffScanner        — 에지 에너지 기반 (fallback #2)
 """
 
-from final.detection.bbox import BBox
-from final.detection.cliff import CliffScanner
-from final.detection.contour import ContourDetector
-from final.detection.ocr import OcrDensityDetector
+from src.detection.bbox import BBox
+from src.detection.cliff import CliffScanner
+from src.detection.contour import ContourDetector
+from src.detection.ocr import OcrDensityDetector
 
 __all__ = ["BBox", "OcrDensityDetector", "ContourDetector", "CliffScanner"]

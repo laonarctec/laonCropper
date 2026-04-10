@@ -11,7 +11,7 @@ import logging
 import cv2
 import numpy as np
 
-from final.detection.bbox import BBox
+from src.detection.bbox import BBox
 
 logger = logging.getLogger(__name__)
 

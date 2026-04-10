@@ -28,7 +28,7 @@ Cliff Scan (3차)
 
 ### 최종 구조 (SoC)
 ```
-final/
+src/
 ├── detection/          # 탐지 레이어
 │   ├── bbox.py         # BBox 타입
 │   ├── ocr.py          # OCR DensTuned (primary)
@@ -39,6 +39,19 @@ final/
 ├── cli.py              # CLI
 └── README.md
 ```
+
+### 배포
+- **Docker**: `Dockerfile` + `docker-compose.yml`
+- 포트: 8200
+- API: `POST /crop` (multipart file → cropped image)
+- Swagger UI: `http://localhost:8200/docs`
+
+### Docker 테스트 결과
+| 이미지 | 상태 | 응답 시간 |
+|--------|------|-----------|
+| 책상 위 영수증 | 200 OK | 8.4s (첫 요청, 모델 로드) |
+| 카카오톡 영수증 | 200 OK | 1.1s |
+| 당근 포스터 영수증 | 200 OK | 0.8s |
 
 ## 교훈
 1. 소규모 데이터셋(100장)으로 딥러닝 객체 탐지 일반화는 구조적 한계

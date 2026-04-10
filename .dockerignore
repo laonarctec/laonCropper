@@ -1,0 +1,14 @@
+.venv
+.git
+__pycache__
+*.pyc
+datasets
+samples
+docs
+runs
+temp_uploads
+test_results*
+.hf_cache
+*.pt
+.bkit
+.claude

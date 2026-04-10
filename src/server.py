@@ -13,7 +13,7 @@ from fastapi import BackgroundTasks, FastAPI, File, UploadFile
 from fastapi.responses import FileResponse
 from starlette.concurrency import run_in_threadpool
 
-from final.processor import ImageProcessor
+from src.processor import ImageProcessor
 
 app = FastAPI(title="laonCropper API")
 _processor = ImageProcessor()

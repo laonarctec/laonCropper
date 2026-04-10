@@ -15,7 +15,7 @@ import cv2
 import numpy as np
 from sklearn.cluster import DBSCAN
 
-from final.detection.bbox import BBox
+from src.detection.bbox import BBox
 
 logger = logging.getLogger(__name__)
 
