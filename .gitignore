@@ -1,0 +1,30 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# YOLO training artifacts
+runs/
+*.cache
+*.pt
+temp_uploads/
+test_results/
+test_results_hf/
+
+# Dataset & cache (large binary)
+datasets/
+.hf_cache/
+.python-version
+
+# Generated test outputs
+samples/compare/
+standalone_crop_test.jpg
+
+# bkit agent state
+.bkit/
