@@ -1,7 +1,8 @@
 """FastAPI 서버 — 영수증 크롭 API.
 
 엔드포인트:
-    POST /crop — 이미지 업로드 → 크롭된 이미지 반환
+    GET  /health — 헬스체크
+    POST /crop   — 이미지 업로드 → 크롭된 이미지 반환
 """
 
 from __future__ import annotations
@@ -20,6 +21,11 @@ _processor = ImageProcessor()
 
 UPLOAD_DIR = Path("temp_uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 
 @app.post("/crop")

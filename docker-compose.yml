@@ -4,5 +4,10 @@ services:
     ports:
       - "8200:8200"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8200/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     environment:
       - OCR_PAD_RATIO=0.02
