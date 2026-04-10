@@ -1,0 +1,13 @@
+{
+  "currentFeature": null,
+  "features": {
+    "receipt-detection": {
+      "phase": "archived",
+      "matchRate": 97,
+      "iterationCount": 7,
+      "startedAt": "2026-04-09T00:00:00Z",
+      "archivedAt": "2026-04-10T00:00:00Z",
+      "archivedTo": "docs/archive/2026-04/receipt-detection/"
+    }
+  }
+}
