@@ -148,12 +148,16 @@ class OcrDensityDetector:
         if len(best_boxes) < MIN_TEXT_BOXES:
             return None
 
-        # 4. y 범위 겹치는 인접 클러스터 병합
+        # 4. y 범위 겹치거나 인접한 클러스터 병합
         #    영수증은 좌(항목명) / 우(금액)로 분리될 수 있으나 y 범위는 동일.
-        #    포스터/간판 텍스트는 y 범위가 다르므로 병합되지 않음.
+        #    상단(품목) / 하단(합계)처럼 수직으로 인접한 경우도 병합.
+        #    포스터/간판 텍스트는 y 간격이 크므로 병합되지 않음.
         best_ys = [b[1] for b in best_boxes] + [b[3] for b in best_boxes]
         best_y_min, best_y_max = min(best_ys), max(best_ys)
         best_y_span = best_y_max - best_y_min
+
+        avg_line_h = float(np.mean([b[3] - b[1] for b in filtered]))
+        gap_threshold = avg_line_h * 2.5
 
         cluster_boxes = list(best_boxes)
         for other_label in unique_labels:
@@ -163,10 +167,10 @@ class OcrDensityDetector:
             other_boxes = [b for b, m in zip(filtered, other_mask) if m]
             other_ys = [b[1] for b in other_boxes] + [b[3] for b in other_boxes]
             other_y_min, other_y_max = min(other_ys), max(other_ys)
-            # y 범위 겹침 계산
             overlap = max(0, min(best_y_max, other_y_max) - max(best_y_min, other_y_min))
             overlap_ratio = overlap / best_y_span if best_y_span > 0 else 0
-            if overlap_ratio > 0.3:  # 30% 이상 겹치면 같은 영수증으로 간주
+            gap = max(0, max(best_y_min, other_y_min) - min(best_y_max, other_y_max))
+            if overlap_ratio > 0.3 or gap < gap_threshold:
                 cluster_boxes.extend(other_boxes)
 
         # 5. 최외곽 포인트 + padding
