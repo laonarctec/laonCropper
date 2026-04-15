@@ -173,7 +173,28 @@ class OcrDensityDetector:
             if overlap_ratio > 0.3 or gap < gap_threshold:
                 cluster_boxes.extend(other_boxes)
 
-        # 5. 최외곽 포인트 + padding
+        # 5. noise 포인트 연쇄 흡수 (DBSCAN에서 제외된 소수 텍스트 박스)
+        #    헤더(상호명, 날짜 등)처럼 MIN_SAMPLES 미만으로 클러스터를 못 이룬 경우 포함.
+        #    경계 흡수 후 경계가 확장되면 다시 체크 — 연쇄적으로 전체 헤더 흡수.
+        noise_margin = h * 0.03
+        remaining = [b for b, lbl in zip(filtered, labels) if lbl == -1]
+        absorbed = True
+        while absorbed and remaining:
+            absorbed = False
+            merged_ys = [b[1] for b in cluster_boxes] + [b[3] for b in cluster_boxes]
+            cur_y_min, cur_y_max = min(merged_ys), max(merged_ys)
+            next_remaining = []
+            for b in remaining:
+                gap_top = max(0, cur_y_min - b[3])
+                gap_bottom = max(0, b[1] - cur_y_max)
+                if gap_top < noise_margin or gap_bottom < noise_margin:
+                    cluster_boxes.append(b)
+                    absorbed = True
+                else:
+                    next_remaining.append(b)
+            remaining = next_remaining
+
+        # 6. 최외곽 포인트 + padding
         xs = [b[0] for b in cluster_boxes] + [b[2] for b in cluster_boxes]
         ys = [b[1] for b in cluster_boxes] + [b[3] for b in cluster_boxes]
         pad_x = int(w * PAD_RATIO)
